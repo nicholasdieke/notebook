@@ -9,7 +9,7 @@ import {
   ModalOverlay,
   Text,
 } from "@chakra-ui/react"
-import { Input } from "app/core/components/index"
+import { Input, Select } from "app/core/components/index"
 import createNoteMutation from "app/notes/mutations/createNote"
 import { useMutation } from "blitz"
 import { useFormik } from "formik"
@@ -20,6 +20,7 @@ import * as yup from "yup"
 const validationSchema = yup.object({
   title: yup.string().required(),
   content: yup.string().required(),
+  tags: yup.array(yup.string()),
 })
 
 interface AddNoteFormProps {
@@ -42,11 +43,14 @@ const AddNoteForm: FC<AddNoteFormProps> = ({ isOpen, handleClose }) => {
     initialValues: {
       title: "",
       content: "",
+      tags: [],
     },
     validateOnChange: false,
     validationSchema,
     onSubmit,
   })
+
+  const tagOptions = ["Idea", "Travel", "Sports", "Tech"]
 
   return (
     <>
@@ -88,6 +92,22 @@ const AddNoteForm: FC<AddNoteFormProps> = ({ isOpen, handleClose }) => {
                     onChange={handleChange}
                     isInvalid={!!errors?.content}
                     helperText={errors?.content as string}
+                    mb="0.5rem"
+                  />
+                  <Select
+                    name="tags"
+                    label="Tags"
+                    value={values.tags.map((opt) => ({ label: `${opt}`, value: `${opt}` }))}
+                    defaultValue={values.tags.map((val) => ({ label: val, value: val }))}
+                    options={tagOptions.map((opt) => ({ label: `${opt}`, value: `${opt}` }))}
+                    isCreatable={true}
+                    onChange={(newVal) =>
+                      setFieldValue(
+                        "tags",
+                        newVal?.map(({ value }) => value)
+                      )
+                    }
+                    isMulti
                   />
                 </Flex>
 

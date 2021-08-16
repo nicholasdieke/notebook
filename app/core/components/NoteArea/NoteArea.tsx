@@ -6,6 +6,7 @@ import getNotes from "app/notes/queries/getNotes"
 import { useQuery } from "blitz"
 import { Note, User } from "db"
 import { FC, useState } from "react"
+import { Edit } from "react-feather"
 
 interface NoteAreaProps {}
 
@@ -18,13 +19,23 @@ const NoteArea: FC<NoteAreaProps> = ({}) => {
   return (
     <Flex bg="gray.100" p="1rem">
       <Stack spacing="0.5rem" mr="1rem">
+        <Button
+          mb="0.5rem"
+          leftIcon={<Edit />}
+          colorScheme="purple"
+          onClick={() => setAddNote(true)}
+        >
+          Add a new note
+        </Button>
         {notes &&
           notes.map((note) => (
-            <NoteBox key={`note-${note.id}`} note={note} onClick={() => setCurrentNote(note)} />
+            <NoteBox
+              isCurrent={currentNote?.id === note.id}
+              key={`note-${note.id}`}
+              note={note}
+              onClick={() => setCurrentNote(note)}
+            />
           ))}
-        <Button colorScheme="purple" onClick={() => setAddNote(true)}>
-          Add
-        </Button>
       </Stack>
       {addNote && (
         <AddNoteForm

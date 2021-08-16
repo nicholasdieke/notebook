@@ -6,16 +6,19 @@ import { FC } from "react"
 interface NoteBoxProps {
   note: Note & { user: User }
   onClick: () => void
+  isCurrent: boolean
 }
 
-const NoteBox: FC<NoteBoxProps> = ({ note, onClick }) => {
+const NoteBox: FC<NoteBoxProps> = ({ note, onClick, isCurrent }) => {
   return (
     <Box
       p="1rem"
       w="300px"
-      boxShadow="sm"
+      boxShadow={isCurrent ? "md" : "sm"}
       borderRadius="5px"
       bg="white"
+      borderWidth="2px"
+      borderColor={isCurrent ? "purple.200" : "white"}
       cursor="pointer"
       _hover={{ bg: "gray.50" }}
       onClick={onClick}
@@ -30,12 +33,11 @@ const NoteBox: FC<NoteBoxProps> = ({ note, onClick }) => {
         {note.content}
       </Text>
       <Flex>
-        <Tag colorScheme="red" mr="0.5rem">
-          Idea
-        </Tag>
-        <Tag colorScheme="green" mr="0.5rem">
-          News
-        </Tag>
+        {note.tags.map((tag) => (
+          <Tag key={`tag-${tag}`} colorScheme="purple" mr="0.5rem">
+            {tag}
+          </Tag>
+        ))}
       </Flex>
     </Box>
   )

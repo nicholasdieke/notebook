@@ -7,10 +7,11 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
+  Tag,
   Text,
 } from "@chakra-ui/react"
 import deleteNoteMutation from "app/notes/mutations/deleteNote"
-import { displaySentenceDate } from "app/utils/dates/format"
+import { displayDateAndTime } from "app/utils/dates/format"
 import { useMutation } from "blitz"
 import { Note, User } from "db"
 import { FC, useState } from "react"
@@ -28,44 +29,64 @@ const NoteDetail: FC<NoteDetailProps> = ({ note, refetch }) => {
 
   return (
     <Box p="2rem" w="100%" bg="white" borderRadius="5px" boxShadow="sm" minH="80vh">
-      <Flex justifyContent="space-between">
-        <Box>
-          <Heading mb="0.5rem">{note.title}</Heading>
-          <Text mb="0.5rem" fontSize="14px" color="gray.700">
-            {displaySentenceDate(note.createdAt)} by {note.user.name}
-          </Text>
-        </Box>
-        <Box>
-          <Menu>
-            <MenuButton>
-              <MoreVertical />
-            </MenuButton>
-            <MenuList>
-              <MenuItem>Edit</MenuItem>
-              <MenuItem>Archive</MenuItem>
-              <MenuItem onClick={() => setRemoveNote(true)}>Delete</MenuItem>
-            </MenuList>
-          </Menu>
-        </Box>
-        {removeNote && (
-          <ConfirmModal
-            isNegative
-            onClose={() => setRemoveNote(false)}
-            onCancel={() => setRemoveNote(false)}
-            onConfirm={async () => {
-              await deleteNote({ noteId: note.id })
-              setRemoveNote(false)
-              refetch()
-            }}
-            title="Delete note?"
-          >
-            Are you sure you want to delete this note?
-          </ConfirmModal>
-        )}
-      </Flex>
-      <Divider />
+      {!!note && (
+        <>
+          <Flex justifyContent="space-between">
+            <Box>
+              <Heading mb="1rem">{note.title}</Heading>
+              <Flex fontSize="14px" color="gray.600" mb="0.5rem">
+                <Flex direction="column" justifyContent="space-between">
+                  <Text mb="1rem">Created by</Text>
+                  <Text mb="1rem">Last Modified</Text>
+                  <Text mb="1rem">Tags</Text>
+                </Flex>
+                <Flex color="black" direction="column" ml="2rem" justifyContent="space-between">
+                  <Text mb="1rem">{note.user.name}</Text>
+                  <Text mb="1rem">{displayDateAndTime(note.updatedAt)}</Text>
+                  <Flex mb="1rem">
+                    {note.tags.map((tag) => (
+                      <Tag key={`tag-${tag}`} colorScheme="purple" mr="0.5rem">
+                        {tag}
+                      </Tag>
+                    ))}
+                  </Flex>
+                </Flex>
+              </Flex>
+            </Box>
+            <Box>
+              <Menu>
+                <MenuButton>
+                  <MoreVertical />
+                </MenuButton>
+                <MenuList>
+                  <MenuItem>Edit</MenuItem>
+                  <MenuItem>Archive</MenuItem>
+                  <MenuItem onClick={() => setRemoveNote(true)}>Delete</MenuItem>
+                </MenuList>
+              </Menu>
+            </Box>
+            {removeNote && (
+              <ConfirmModal
+                isNegative
+                onClose={() => setRemoveNote(false)}
+                onCancel={() => setRemoveNote(false)}
+                onConfirm={async () => {
+                  await deleteNote({ noteId: note.id })
+                  setRemoveNote(false)
+                  refetch()
+                }}
+                title="Delete note?"
+              >
+                Are you sure you want to delete this note?
+              </ConfirmModal>
+            )}
+          </Flex>
 
-      <Text mt="1rem">{note.content}</Text>
+          <Divider />
+
+          <Text mt="1rem">{note.content}</Text>
+        </>
+      )}
     </Box>
   )
 }

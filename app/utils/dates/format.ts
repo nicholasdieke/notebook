@@ -6,3 +6,4 @@ export const formatCheck = (date: Date | string, toFormat: string) => {
 }
 
 export const displaySentenceDate = (date: Date | string) => formatCheck(date, "EE, dd MMM")
+export const displayDateAndTime = (date: Date | string) => formatCheck(date, "dd MMM yyyy, HH:mm")
