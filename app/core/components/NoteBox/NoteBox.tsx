@@ -13,6 +13,7 @@ const NoteBox: FC<NoteBoxProps> = ({ note, onClick, isCurrent }) => {
   return (
     <Box
       p="1rem"
+      my="0.5rem"
       w="300px"
       boxShadow={isCurrent ? "md" : "sm"}
       borderRadius="5px"
@@ -24,21 +25,26 @@ const NoteBox: FC<NoteBoxProps> = ({ note, onClick, isCurrent }) => {
       onClick={onClick}
     >
       <Flex justifyContent="space-between" mb="0.5rem">
-        <Text fontWeight="bold">{note.title}</Text>
+        <Text fontWeight="bold" isTruncated>
+          {note.title}
+        </Text>
         <Text fontSize="12px" whiteSpace="nowrap">
           {displaySentenceDate(note.createdAt)}
         </Text>
       </Flex>
-      <Text mb="1rem" color="gray.600">
+      <Text color="gray.600" isTruncated>
         {note.content}
       </Text>
-      <Flex>
-        {note.tags.map((tag) => (
-          <Tag key={`tag-${tag}`} colorScheme="purple" mr="0.5rem">
-            {tag}
-          </Tag>
-        ))}
-      </Flex>
+      {note.tags.length > 0 && (
+        <Flex mt="1rem" alignItems="center">
+          {note.tags.slice(0, 2).map((tag) => (
+            <Tag key={`tag-${tag}`} colorScheme="purple" mr="0.5rem">
+              {tag}
+            </Tag>
+          ))}
+          {note.tags.length > 2 && <Text fontSize="12px">+{note.tags.length - 2} more</Text>}
+        </Flex>
+      )}
     </Box>
   )
 }

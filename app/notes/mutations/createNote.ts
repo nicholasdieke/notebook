@@ -8,17 +8,19 @@ const CreateNote = z.object({
   tags: z.array(z.string()),
 })
 
-export default resolver.pipe(resolver.zod(CreateNote), async (input, ctx) => {
+export default resolver.pipe(resolver.zod(CreateNote), resolver.authorize(), async (input, ctx) => {
   const { title, content, tags } = input
-  const currentUser = await db.user.findFirst()
+  const user = await db.user.findFirst({ where: { id: ctx.session.userId! } })
 
-  const note = await db.note.create({
+  const _note = await db.note.create({
     data: {
-      title,
-      content,
+      title: title.trim(),
+      content: content.trim(),
       tags,
-      user: { connect: { id: currentUser?.id } },
+      user: { connect: { id: ctx.session.userId! } },
     },
   })
+
+  const note = { ..._note, user: user! }
   return note
 })
